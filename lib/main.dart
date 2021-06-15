@@ -1,21 +1,11 @@
+import 'package:dialog_example/%20no_position/closeable_dropdown_no_position.dart';
 import 'package:flutter/material.dart';
 
-import 'closeable_dropdown.dart';
+import 'final/closeable_dropdown_final.dart';
 
 void main() {
   runApp(MyApp());
 }
-
-//TODO:
-// dopiesc
-// live coding czy walthrough?
-// dopiesc kod do perfekcji
-// dodaj tez komenty co jest po co
-// dokoncz scxenariusz
-//check continuity sketch
-
-//what you could improve
-//- add other properties like is loadinngg and whatever you need
 
 class MyApp extends StatelessWidget {
   @override
@@ -59,30 +49,50 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0) + EdgeInsets.only(top: 50.0, left: 20),
-          child: SizedBox(
-            //width: 200.0,
+            padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  'Your choice:',
+              children: [
+                Expanded(
+                  child: _buildDropdownWithLabel(),
                 ),
-                SizedBox(
-                  height: 8,
+                Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(child: _buildDropdownWithLabel()),
+                      SizedBox(
+                        width: 16.0,
+                      ),
+                      Expanded(child: _buildDropdownWithLabel()),
+                    ],
+                  ),
                 ),
-                CloseableDropdown(
-                  items: _items,
-                  selected: _selected,
-                  hint: 'Please select a value',
-                  onChange: _onItemSelected,
+                Expanded(
+                  child: _buildDropdownWithLabel(),
                 )
               ],
-            ),
-          ),
-        ),
+            )),
       ),
+    );
+  }
+
+  Widget _buildDropdownWithLabel() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Your choice:',
+        ),
+        SizedBox(
+          height: 8,
+        ),
+        CloseableDropdownFinal(
+          items: _items,
+          selected: _selected,
+          hint: 'Please select a value',
+          onChange: _onItemSelected,
+        )
+      ],
     );
   }
 }

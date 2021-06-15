@@ -2,12 +2,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'closeable_dropdown_layout.dart';
+import 'closeable_dropdown_layout_final.dart';
 
-part 'closeable_dropdown_route.dart';
+part 'closeable_dropdown_route_final.dart';
 
-class CloseableDropdown extends StatefulWidget {
-  const CloseableDropdown({Key? key, required this.items, this.hint, this.selected, this.onChange}) : super(key: key);
+class CloseableDropdownFinal extends StatefulWidget {
+  const CloseableDropdownFinal({Key? key, required this.items, this.hint, this.selected, this.onChange})
+      : super(key: key);
 
   final List<String> items;
   final String? selected;
@@ -15,10 +16,10 @@ class CloseableDropdown extends StatefulWidget {
   final String? hint;
 
   @override
-  _CloseableDropdownState createState() => _CloseableDropdownState();
+  _CloseableDropdownFinalState createState() => _CloseableDropdownFinalState();
 }
 
-class _CloseableDropdownState extends State<CloseableDropdown> with SingleTickerProviderStateMixin {
+class _CloseableDropdownFinalState extends State<CloseableDropdownFinal> with SingleTickerProviderStateMixin {
   static const _collapsedHeight = 36.0;
   static const _itemHeight = 44.0;
   static const _closeHeaderHeight = 48.0;
@@ -26,14 +27,14 @@ class _CloseableDropdownState extends State<CloseableDropdown> with SingleTicker
 
   final _collapsedKey = GlobalKey(); //we need that to get position of the widget (RenderBox)
   var _isOpen = false;
-  _CloseableDropdownRoute? _popupRoute;
+  _CloseableDropdownRouteFinal? _popupRoute;
 
   void _expand() {
-    _popupRoute = _CloseableDropdownRoute(
+    _popupRoute = _CloseableDropdownRouteFinal(
       child: LayoutBuilder(builder: (context, constraints) {
         final renderBox = _collapsedKey.currentContext?.findRenderObject() as RenderBox;
-        final yOffset = renderBox.localToGlobal(Offset.zero).dy;
-        final xOffset = renderBox.localToGlobal(Offset.zero).dx;
+        final ifinitalYOffset = renderBox.localToGlobal(Offset.zero).dy;
+        final intialXOffset = renderBox.localToGlobal(Offset.zero).dx;
         final overlapYOffset = 12; //so that modal doesn't cover collapsed button
         final expandedHeight = _closeHeaderHeight + widget.items.length * _itemHeight;
         final topConstraint = AppBar().preferredSize.height + MediaQuery.of(context).padding.top + overlapYOffset;
@@ -42,21 +43,24 @@ class _CloseableDropdownState extends State<CloseableDropdown> with SingleTicker
         final maxWidth = min(constraints.maxWidth, renderBox.size.width);
         //yoffset is from top so we do not need to take appbar or safeare into consideration
         //just check whether it wouldnt fit and if is in lowe bottom of screen
-        final showAtTop = expandedHeight > constraints.maxHeight - yOffset && yOffset > constraints.maxHeight / 2;
-        final calculatedYOffset =
-            showAtTop ? yOffset - expandedHeight - overlapYOffset : yOffset + _collapsedHeight + overlapYOffset;
+        final showAtTop =
+            expandedHeight > constraints.maxHeight - ifinitalYOffset - _collapsedHeight - overlapYOffset &&
+                ifinitalYOffset > constraints.maxHeight / 2;
+        final calculatedYOffset = showAtTop
+            ? ifinitalYOffset - expandedHeight - overlapYOffset
+            : ifinitalYOffset + _collapsedHeight + overlapYOffset;
         final wouldOverflow = calculatedYOffset < topConstraint ||
             calculatedYOffset + expandedHeight > constraints.maxHeight - bottomConstraint;
         final maxExpandedHeight = wouldOverflow
             ? (showAtTop
-                ? yOffset - topConstraint - overlapYOffset
-                : constraints.maxHeight - yOffset - overlapYOffset - _collapsedHeight - bottomConstraint)
+                ? ifinitalYOffset - topConstraint - overlapYOffset
+                : constraints.maxHeight - ifinitalYOffset - overlapYOffset - _collapsedHeight - bottomConstraint)
             : widget.items.length * _itemHeight + _closeHeaderHeight;
 
         return CustomSingleChildLayout(
-          delegate: CloseableDropdownLayout(
+          delegate: CloseableDropdownLayoutFinal(
               yOffset: wouldOverflow && showAtTop ? topConstraint : calculatedYOffset,
-              xOffset: xOffset,
+              xOffset: intialXOffset,
               textDirection: Directionality.maybeOf(context)!,
               maxHeight: constraints.maxHeight,
               maxWidth: maxWidth),
@@ -119,16 +123,16 @@ class _CloseableDropdownState extends State<CloseableDropdown> with SingleTicker
     return Material(
       child: Container(
         decoration: _getDecoration(),
-        child: IntrinsicWidth(
-          //this makes sure that dropdown is as wide as it need to be
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildExpandedHeader(),
-              _buildExpandedItems(maxExpandedHeight - _closeHeaderHeight),
-            ],
-          ),
+        //child: IntrinsicWidth(
+        //this makes sure that dropdown is as wide as it need to be
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildExpandedHeader(),
+            _buildExpandedItems(maxExpandedHeight - _closeHeaderHeight),
+          ],
         ),
+        //  ),
       ),
     );
   }

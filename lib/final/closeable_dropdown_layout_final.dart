@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-class CloseableDropdownLayout extends SingleChildLayoutDelegate {
-  CloseableDropdownLayout({
+class CloseableDropdownLayoutFinal extends SingleChildLayoutDelegate {
+  CloseableDropdownLayoutFinal({
     required this.textDirection,
     this.xOffset = 0,
     this.yOffset = 0,
@@ -35,7 +35,7 @@ class CloseableDropdownLayout extends SingleChildLayoutDelegate {
   }
 
   @override
-  bool shouldRelayout(CloseableDropdownLayout oldDelegate) {
+  bool shouldRelayout(CloseableDropdownLayoutFinal oldDelegate) {
     return textDirection != oldDelegate.textDirection ||
         xOffset != oldDelegate.xOffset ||
         yOffset != oldDelegate.yOffset ||

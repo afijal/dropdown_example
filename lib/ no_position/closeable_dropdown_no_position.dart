@@ -2,16 +2,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'final/closeable_dropdown_layout_final.dart';
 
-class CustomDropdown extends StatefulWidget {
-  const CustomDropdown({
-    Key? key,
-    required this.items,
-    this.hint,
-    this.selected,
-    this.onChange,
-  }) : super(key: key);
+part 'closeable_dropdown_route_no_position.dart';
+
+class CloseableDropdownNoPosition extends StatefulWidget {
+  const CloseableDropdownNoPosition({Key? key, required this.items, this.hint, this.selected, this.onChange})
+      : super(key: key);
 
   final List<String> items;
   final String? selected;
@@ -19,10 +15,10 @@ class CustomDropdown extends StatefulWidget {
   final String? hint;
 
   @override
-  _CustomDropdownState createState() => _CustomDropdownState();
+  _CloseableDropdownNoPositionState createState() => _CloseableDropdownNoPositionState();
 }
 
-class _CustomDropdownState extends State<CustomDropdown> with SingleTickerProviderStateMixin {
+class _CloseableDropdownNoPositionState extends State<CloseableDropdownNoPosition> with SingleTickerProviderStateMixin {
   static const _collapsedHeight = 36.0;
   static const _itemHeight = 44.0;
   static const _closeHeaderHeight = 48.0;
@@ -30,13 +26,28 @@ class _CustomDropdownState extends State<CustomDropdown> with SingleTickerProvid
 
   final _collapsedKey = GlobalKey(); //we need that to get position of the widget (RenderBox)
   var _isOpen = false;
-  // _CloseableDropdownRoute? _popupRoute;
+  _CloseableDropdownRouteNoPosition? _popupRoute;
 
   void _expand() {
-    //TODO: create route and show it
+    _popupRoute = _CloseableDropdownRouteNoPosition(
+      child: LayoutBuilder(builder: (context, constraints) {
+        return _buildExpanded();
+      }),
+    );
 
     setState(() {
       _isOpen = true;
+    });
+
+    Navigator.of(context).push(_popupRoute!).then<void>((newValue) {
+      setState(() {
+        _isOpen = false;
+      });
+      _popupRoute = null;
+      if (!mounted || newValue == null) return;
+      if (widget.onChange != null) {
+        widget.onChange!(newValue);
+      }
     });
   }
 
@@ -58,12 +69,11 @@ class _CustomDropdownState extends State<CustomDropdown> with SingleTickerProvid
           child: Row(
             children: [
               Expanded(
-                child: Text(
-                  widget.selected == null ? widget.hint ?? 'Please select a value' : widget.selected!,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-              ),
+                  child: Text(
+                widget.selected == null ? widget.hint ?? '' : widget.selected!,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              )),
               Icon(
                 _isOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
                 size: 16,
@@ -75,20 +85,20 @@ class _CustomDropdownState extends State<CustomDropdown> with SingleTickerProvid
     );
   }
 
-  Widget _buildExpanded(double maxExpandedHeight) {
+  Widget _buildExpanded() {
     return Material(
       child: Container(
         decoration: _getDecoration(),
-        child: IntrinsicWidth(
-          //this makes sure that dropdown is as wide as it need to be
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildExpandedHeader(),
-              _buildExpandedItems(maxExpandedHeight - _closeHeaderHeight),
-            ],
-          ),
+        //child: IntrinsicWidth(
+        //this makes sure that dropdown is as wide as it need to be
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildExpandedHeader(),
+            _buildExpandedItems(),
+          ],
         ),
+        //  ),
       ),
     );
   }
@@ -117,34 +127,31 @@ class _CustomDropdownState extends State<CustomDropdown> with SingleTickerProvid
   }
 
   // we need maxheight so we won't render overflow out of the screen, we will have limited space available
-  Widget _buildExpandedItems(double maxHeight) {
-    return SizedBox(
-      height: maxHeight,
-      child: SingleChildScrollView(
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: widget.items
-                .map(
-                  (e) => Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      //we want a feedback that the item was clicked
-                      onTap: () => Navigator.of(context).pop(e),
-                      child: SizedBox(
-                          height: _itemHeight,
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(24, 0, 24, 24),
-                            child: Text(
-                              e,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          )),
-                    ),
+  Widget _buildExpandedItems() {
+    return SingleChildScrollView(
+      child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: widget.items
+              .map(
+                (e) => Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    //we want a feedback that the item was clicked
+                    onTap: () => Navigator.of(context).pop(e),
+                    child: SizedBox(
+                        height: _itemHeight,
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(24, 0, 24, 24),
+                          child: Text(
+                            e,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        )),
                   ),
-                )
-                .toList()),
-      ),
+                ),
+              )
+              .toList()),
     );
   }
 
