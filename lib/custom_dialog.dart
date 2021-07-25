@@ -42,33 +42,67 @@ class CustomDialog extends StatelessWidget {
   final double originWidth;
   final Iterable<String> items;
 
-  Widget _postionChild(double xOffset, double yOffset, double dropdownHeight, double maxWidth,
+  Widget _postionChild(double xOffset, double yOffset, double dropdownHeight, double maxWidth, bool isOnRightHalf,
           {required Widget child}) =>
-      Positioned(
-        child: child,
-        top: yOffset,
-        height: dropdownHeight,
-        left: xOffset,
-      );
+      isOnRightHalf
+          ? Positioned(
+              child: child,
+              top: yOffset,
+              height: dropdownHeight,
+              right: modalHorizontalPadding,
+            )
+          : Positioned(
+              child: child,
+              top: yOffset,
+              height: dropdownHeight,
+              left: xOffset,
+            );
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       final expandedHeight = closeHeaderHeight + items.length * itemHeight + borderWidth;
-      final maxWidth = constraints.maxWidth - xOriginOffset - modalHorizontalPadding;
 
       final topConstraint = AppBar().preferredSize.height + MediaQuery.of(context).padding.top + modalVerticalPaddinng;
       final bootomConstraint = MediaQuery.of(context).padding.bottom + modalVerticalPaddinng;
 
-      final calculatedYOffset = yOriginOffset + collapsedHeight + modalVerticalPaddinng;
+      bool isOnRightHalf = xOriginOffset > MediaQuery.of(context).size.width / 2;
+
+      final maxWidth = isOnRightHalf
+          ? constraints.maxWidth - 2 * modalHorizontalPadding
+          : constraints.maxWidth - xOriginOffset - modalHorizontalPadding;
+      final availableVerticalSpace = constraints.maxHeight - yOriginOffset - collapsedHeight - modalVerticalPaddinng;
+
+      final showAtTop = expandedHeight > availableVerticalSpace && yOriginOffset > constraints.maxHeight / 2;
+
+      var calculatedYOffset = showAtTop
+          ? yOriginOffset - expandedHeight - modalVerticalPaddinng
+          : yOriginOffset + collapsedHeight + modalVerticalPaddinng;
+      final wouldOverflow = calculatedYOffset + expandedHeight > constraints.maxHeight - bootomConstraint ||
+          calculatedYOffset < topConstraint;
+      final maxExpandedHeight = wouldOverflow
+          ? (showAtTop
+              ? yOriginOffset - topConstraint - modalVerticalPaddinng
+              : availableVerticalSpace - bootomConstraint)
+          : expandedHeight;
+      if (wouldOverflow && showAtTop) calculatedYOffset = topConstraint;
 
       return Stack(
         children: [
-          _postionChild(xOriginOffset, calculatedYOffset, expandedHeight, maxWidth,
+          _postionChild(
+            xOriginOffset,
+            calculatedYOffset,
+            maxExpandedHeight,
+            maxWidth,
+            isOnRightHalf,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxWidth),
               child: _buildContent(
                 context,
-                MediaQuery.of(context).size.height,
-              )),
+                maxExpandedHeight,
+              ),
+            ),
+          ),
         ],
       );
     });
@@ -98,6 +132,7 @@ class CustomDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          SizedBox(width: 16),
           Text('Close'),
           SizedBox(width: 4),
           IconButton(

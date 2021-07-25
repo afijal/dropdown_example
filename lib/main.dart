@@ -25,10 +25,22 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<String> _items = [
-    'First item',
-    'Second item',
-    'Third item',
-    'Fourth item which is a very long oneeee e e e e  e e e e e ',
+    '1',
+    '2',
+    '3',
+    '4',
+    '1',
+    '2',
+    '3',
+    '4',
+    '1',
+    '2',
+    '3',
+    '4',
+    '1',
+    '2',
+    '3',
+    '4',
   ];
 
   String? _selected;
@@ -60,11 +72,17 @@ class _MyHomePageState extends State<MyHomePage> {
                     Expanded(
                       child: Row(
                         children: [
-                          Expanded(child: _buildDropdownWithLabel()),
+                          Expanded(
+                            child: _buildDropdownWithLabel(),
+                            flex: 1,
+                          ),
                           SizedBox(
                             width: 16.0,
                           ),
-                          Expanded(child: _buildDropdownWithLabel()),
+                          Expanded(
+                            child: _buildDropdownWithLabel(),
+                            flex: 1,
+                          ),
                         ],
                       ),
                     ),
