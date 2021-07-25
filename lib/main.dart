@@ -37,6 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _selected = item;
     });
+    print('$_selected');
   }
 
   @override

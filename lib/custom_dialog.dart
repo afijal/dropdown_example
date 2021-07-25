@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../constants.dart';
-import '../decoration_util.dart';
+import 'constants.dart';
+import 'decoration_util.dart';
 
-class CustomDialogNoPosition extends StatelessWidget {
-  const CustomDialogNoPosition({
+class CustomDialog extends StatelessWidget {
+  const CustomDialog({
     Key? key,
     required this.items,
   }) : super(key: key);
@@ -13,14 +13,13 @@ class CustomDialogNoPosition extends StatelessWidget {
     BuildContext context,
     Iterable<String> items,
   ) {
-    final barrierColor = Colors.white.withOpacity(0.7);
+    final barrierColor = Colors.white.withOpacity(0.8);
 
-    return showDialog<String>(
+    return showDialog(
       context: context,
-      useSafeArea: false, //!!!!!!!!!!
       useRootNavigator: false,
       barrierColor: barrierColor,
-      builder: (context) => CustomDialogNoPosition(
+      builder: (context) => CustomDialog(
         items: items,
       ),
     );
@@ -33,7 +32,12 @@ class CustomDialogNoPosition extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       return Stack(
         children: [
-          Align(alignment: Alignment.center, child: _buildContent(context, MediaQuery.of(context).size.height)),
+          Align(
+              alignment: Alignment.center,
+              child: _buildContent(
+                context,
+                MediaQuery.of(context).size.height,
+              )),
         ],
       );
     });
@@ -82,8 +86,9 @@ class CustomDialogNoPosition extends StatelessWidget {
 
   // we need maxheight so we won't render overflow out of the screen, we will have limited space available
   Widget _buildExpandedItems(BuildContext context, double maxExpandedHeight) {
+    final maxHeight = maxExpandedHeight - closeHeaderHeight - borderWidth;
     return ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: maxExpandedHeight - closeHeaderHeight - borderWidth),
+        constraints: BoxConstraints(maxHeight: maxHeight),
         child: SingleChildScrollView(
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

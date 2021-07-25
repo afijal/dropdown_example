@@ -1,12 +1,9 @@
-import 'package:dialog_example/no_position/custom_dialog_no_position.dart';
-import 'package:dialog_example/poistion_level_one/final_level_one.dart';
-import 'package:dialog_example/position_level_two/final_level_two.dart';
+import 'package:dialog_example/custom_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'constants.dart';
 import 'decoration_util.dart';
-import 'final/custom_dialog_final.dart';
 
 class DialogButton extends StatefulWidget {
   const DialogButton({Key? key, required this.items, this.hint, this.selected, this.onChange}) : super(key: key);
@@ -29,21 +26,12 @@ class DialogButtonState extends State<DialogButton> with SingleTickerProviderSta
       _isOpen = true;
     });
 
-    // DropdownDialog.showItems(context, _collapsedKey, widget.items).then((selected) {
-    //   setState(() {
-    //     _isOpen = false;
-    //   });
-    //   if (selected != null && widget.onChange != null) {
-    //     widget.onChange!(selected);
-    //   }
-    // });
-
-    CustomDialogNoPosition.showItems(context, widget.items).then((selected) {
+    CustomDialog.showItems(context, widget.items).then((value) {
       setState(() {
         _isOpen = false;
       });
-      if (selected != null && widget.onChange != null) {
-        widget.onChange!(selected);
+      if (value != null && widget.onChange != null) {
+        widget.onChange!(value);
       }
     });
   }
