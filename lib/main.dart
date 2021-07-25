@@ -28,7 +28,7 @@ class _MyHomePageState extends State<MyHomePage> {
     'First item',
     'Second item',
     'Third item',
-    'Fourth item which is a very long one',
+    'Fourth item which is a very long oneeee e e e e  e e e e e ',
   ];
 
   String? _selected;

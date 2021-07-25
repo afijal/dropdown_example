@@ -7,33 +7,64 @@ class CustomDialog extends StatelessWidget {
   const CustomDialog({
     Key? key,
     required this.items,
+    required this.xOriginOffset,
+    required this.yOriginOffset,
+    required this.originWidth,
   }) : super(key: key);
 
   static Future<String?> showItems<T>(
     BuildContext context,
+    GlobalKey originKey,
     Iterable<String> items,
   ) {
     final barrierColor = Colors.white.withOpacity(0.8);
+    final renderBox = originKey.currentContext!.findRenderObject() as RenderBox;
+    final xOffset = renderBox.localToGlobal(Offset.zero).dx;
+    final yOffset = renderBox.localToGlobal(Offset.zero).dy;
+    final width = renderBox.size.width;
 
     return showDialog(
       context: context,
       useRootNavigator: false,
       barrierColor: barrierColor,
+      useSafeArea: false,
       builder: (context) => CustomDialog(
         items: items,
+        xOriginOffset: xOffset,
+        yOriginOffset: yOffset,
+        originWidth: width,
       ),
     );
   }
 
+  final double xOriginOffset;
+  final double yOriginOffset;
+  final double originWidth;
   final Iterable<String> items;
+
+  Widget _postionChild(double xOffset, double yOffset, double dropdownHeight, double maxWidth,
+          {required Widget child}) =>
+      Positioned(
+        child: child,
+        top: yOffset,
+        height: dropdownHeight,
+        left: xOffset,
+      );
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
+      final expandedHeight = closeHeaderHeight + items.length * itemHeight + borderWidth;
+      final maxWidth = constraints.maxWidth - xOriginOffset - modalHorizontalPadding;
+
+      final topConstraint = AppBar().preferredSize.height + MediaQuery.of(context).padding.top + modalVerticalPaddinng;
+      final bootomConstraint = MediaQuery.of(context).padding.bottom + modalVerticalPaddinng;
+
+      final calculatedYOffset = yOriginOffset + collapsedHeight + modalVerticalPaddinng;
+
       return Stack(
         children: [
-          Align(
-              alignment: Alignment.center,
+          _postionChild(xOriginOffset, calculatedYOffset, expandedHeight, maxWidth,
               child: _buildContent(
                 context,
                 MediaQuery.of(context).size.height,

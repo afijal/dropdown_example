@@ -26,7 +26,7 @@ class DialogButtonState extends State<DialogButton> with SingleTickerProviderSta
       _isOpen = true;
     });
 
-    CustomDialog.showItems(context, widget.items).then((value) {
+    CustomDialog.showItems(context, _collapsedKey, widget.items).then((value) {
       setState(() {
         _isOpen = false;
       });
